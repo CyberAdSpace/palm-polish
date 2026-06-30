@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   // CLEAN_NEEDER | DETAILER | HOST
+  phone     String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postings      Posting[]
+  bids          Bid[]
+  hostListings  HostListing[]
+}
+
+model Posting {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  title        String
+  description  String?
+  photos       String   // JSON array of photo URLs
+  targetPrice  Float
+  locationType String   // ON_SITE | MEET_UP | NEED_A_PLACE
+  address      String?
+  lat          Float?
+  lng          Float?
+  vehicleType  String?
+  vehicleYear  String?
+
+  waterHookup   Boolean @default(false)
+  electricalOut Boolean @default(false)
+  shadeCanopy   Boolean @default(false)
+  pavedFlat     Boolean @default(false)
+
+  status    String   @default("OPEN") // OPEN | ACCEPTED | COMPLETED | CANCELLED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bids          Bid[]
+  hostListingId String?
+  hostListing   HostListing? @relation(fields: [hostListingId], references: [id])
+}
+
+model Bid {
+  id         String   @id @default(uuid())
+  postingId  String
+  posting    Posting  @relation(fields: [postingId], references: [id])
+  detailerId String
+  detailer   User     @relation(fields: [detailerId], references: [id])
+  amount     Float
+  message    String?
+  status     String   @default("PENDING") // PENDING | ACCEPTED | REJECTED
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model HostListing {
+  id          String   @id @default(uuid())
+  hostId      String
+  host        User     @relation(fields: [hostId], references: [id])
+  title       String
+  description String?
+  spaceType   String   // DRIVEWAY | GARAGE | COMMERCIAL_BAY
+  address     String
+  lat         Float?
+  lng         Float?
+  photos      String?  // JSON array
+  hourlyRate  Float?
+  flatRate    Float?
+  rateType    String   // HOURLY | FLAT
+
+  waterHookup   Boolean @default(false)
+  electricalOut Boolean @default(false)
+  shadeCanopy   Boolean @default(false)
+  pavedFlat     Boolean @default(false)
+
+  available Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postings Posting[]
+}
