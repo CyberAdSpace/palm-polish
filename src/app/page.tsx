@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { Camera, Search, Home as HomeIcon, Star, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import { useAppStore } from "@/store";
 
 function useReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,11 +44,7 @@ function useReveal() {
 }
 
 export default function Home() {
-  const { postings, hostListings } = useAppStore();
   const revealRef = useReveal();
-
-  const openJobs = postings.filter((p) => p.status === "OPEN").length;
-  const availableSpaces = hostListings.filter((h) => h.available).length;
 
   return (
     <>
@@ -109,39 +104,29 @@ export default function Home() {
 
               <div className="mt-14 flex items-center gap-3 text-sm text-[var(--text-muted)]">
                 <Star className="w-4 h-4 fill-[var(--gold)] text-[var(--gold)]" />
-                <span>Trusted by detailers across Tampa, Cape Coral, Fort Myers & Naples</span>
+                <span>Now launching in Tampa Bay &amp; Southwest Florida. Early access is open.</span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Stats */}
+        {/* Early access (honest launch status, no live counts until real) */}
         <section className="relative -mt-16 pb-16 sm:pb-24">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
             <div className="glass p-8 sm:p-12">
-              <div className="grid grid-cols-3 gap-6 sm:gap-12 divide-x divide-[var(--border)]">
-                <div className="text-center pl-0">
-                  <div className="eyebrow mb-3">Open Jobs</div>
-                  <div className="serif text-5xl sm:text-6xl gold-text">{openJobs}</div>
-                  <div className="text-xs text-[var(--text-faint)] mt-2 uppercase tracking-wider">
-                    in your area
-                  </div>
-                </div>
-                <div className="text-center px-2">
-                  <div className="eyebrow mb-3">Spaces Live</div>
-                  <div className="serif text-5xl sm:text-6xl text-white">
-                    {availableSpaces}
-                  </div>
-                  <div className="text-xs text-[var(--text-faint)] mt-2 uppercase tracking-wider">
-                    available now
-                  </div>
-                </div>
+              <div className="eyebrow mb-6 text-center">Early access · We&apos;re just getting started</div>
+              <div className="grid sm:grid-cols-3 gap-8 sm:gap-12 sm:divide-x divide-[var(--border)]">
                 <div className="text-center">
-                  <div className="eyebrow mb-3">Detailers</div>
-                  <div className="serif text-5xl sm:text-6xl text-white">3</div>
-                  <div className="text-xs text-[var(--text-faint)] mt-2 uppercase tracking-wider">
-                    active pros
-                  </div>
+                  <div className="serif text-2xl text-white mb-2">Car owners</div>
+                  <p className="text-sm text-[var(--text-muted)]">Post your request now. We&apos;ll match you as detailers join your area.</p>
+                </div>
+                <div className="text-center sm:px-4">
+                  <div className="serif text-2xl gold-text mb-2">Detailers</div>
+                  <p className="text-sm text-[var(--text-muted)]">Be one of the first pros on the platform and get first pick of jobs.</p>
+                </div>
+                <div className="text-center sm:pl-4">
+                  <div className="serif text-2xl text-white mb-2">Space hosts</div>
+                  <p className="text-sm text-[var(--text-muted)]">List a driveway or bay early and be ready when bookings start.</p>
                 </div>
               </div>
             </div>
