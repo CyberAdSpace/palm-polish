@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Plus, X as XIcon, MapPin, Handshake, Home as HomeIcon, Droplet, Zap, TreePine, Square, Sparkles, ArrowRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { useAppStore } from "@/store";
+import { sendToPalmPolish } from "@/lib/contact";
 import type { LocationType } from "@/lib/types";
 
 const locationOptions = [
@@ -55,10 +56,38 @@ export default function PostJobPage() {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [sendError, setSendError] = useState("");
+  const [sending, setSending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentUser) {
       router.push("/auth");
+      return;
+    }
+    setSending(true);
+    setSendError("");
+    const where = locationType === "ON_SITE" ? "At my place" : locationType === "MEET_UP" ? "Meet up" : "Needs a place";
+    const res = await sendToPalmPolish({
+      name: currentUser.name,
+      email: currentUser.email,
+      topic: `Detailing request: ${title}`,
+      message: description || `${currentUser.name} posted a detailing request: ${title}.`,
+      details: {
+        "Target price": `$${targetPrice}`,
+        Where: where,
+        Address: address,
+        Vehicle: [vehicleYear, vehicleType].filter(Boolean).join(" "),
+        "Water hookup": amenities.water ? "Yes" : "No",
+        "Electrical outlet": amenities.electric ? "Yes" : "No",
+        "Shade or canopy": amenities.shade ? "Yes" : "No",
+        "Paved and flat": amenities.paved ? "Yes" : "No",
+        Photos: photos.length ? `${photos.length} added (ask the customer to email them)` : "None",
+      },
+    });
+    setSending(false);
+    if (!res.ok) {
+      setSendError(res.error || "We couldn't send your request. Please email Contact@PalmPolish.com.");
       return;
     }
     addPosting({
@@ -66,7 +95,7 @@ export default function PostJobPage() {
       userName: currentUser.name,
       title,
       description: description || undefined,
-      photos: photos.length > 0 ? photos : ["/demo/car1.jpg"],
+      photos,
       targetPrice: parseFloat(targetPrice),
       locationType,
       address: address || undefined,
@@ -89,9 +118,9 @@ export default function PostJobPage() {
             <div className="w-14 h-14 rounded-full bg-[var(--gold)]/15 border border-[var(--gold)]/30 flex items-center justify-center mx-auto mb-6">
               <Sparkles className="w-7 h-7 text-[var(--gold)]" />
             </div>
-            <h1 className="serif text-3xl text-white mb-3">Posted.</h1>
+            <h1 className="serif text-3xl text-white mb-3">Request sent.</h1>
             <p className="text-[var(--text-muted)] mb-8">
-              Your detailing request is live. Detailers in your area can now see it and submit bids.
+              Your request went to the Palm Polish team. We&apos;re matching detailers as they join your area and will reply by email.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <button onClick={() => router.push("/dashboard")} className="btn-gold">
@@ -371,9 +400,10 @@ export default function PostJobPage() {
 
             {/* Submit */}
             <div className="pt-2">
-              <button type="submit" className="btn-gold w-full py-4 text-base justify-center">
-                Post Detailing Job <ArrowRight className="w-4 h-4" />
+              <button type="submit" disabled={sending} className="btn-gold w-full py-4 text-base justify-center">
+                {sending ? "Sending…" : <>Post Detailing Job <ArrowRight className="w-4 h-4" /></>}
               </button>
+              {sendError && <p role="alert" className="mt-3 text-center text-sm text-red-400">{sendError}</p>}
             </div>
 
             {!currentUser && (

@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AlertCircle, Sparkles } from "lucide-react";
 import { useAppStore } from "@/store";
+import { sendToPalmPolish } from "@/lib/contact";
 import type { UserRole } from "@/lib/types";
 
 export default function AuthPage() {
@@ -26,7 +27,7 @@ export default function AuthPage() {
       const user = login(email, password);
       if (!user) {
         setError(
-          "Invalid email or password. Try the demo accounts below."
+          "We couldn't find that account on this device. Create an account to join early access."
         );
         return;
       }
@@ -40,6 +41,8 @@ export default function AuthPage() {
     } else {
       try {
         const user = register(email, name, password, role);
+        const roleName = role === "DETAILER" ? "Detailer" : role === "HOST" ? "Space host" : "Car owner";
+        void sendToPalmPolish({ name, email, topic: `Early access sign-up: ${roleName}`, message: `${name} created a Palm Polish early-access account as a ${roleName.toLowerCase()}.`, details: { Role: roleName } });
         router.push(
           user.role === "DETAILER"
             ? "/dashboard"
@@ -148,7 +151,7 @@ export default function AuthPage() {
             </p>
             <p className="text-[var(--text-muted)] mt-4 text-sm max-w-sm">
               Join detailers, owners and driveway hosts building the
-              sunshine state's mobile detailing marketplace.
+              Sunshine State&apos;s mobile detailing marketplace.
             </p>
           </div>
         </div>
@@ -268,33 +271,9 @@ export default function AuthPage() {
               </button>
             </form>
 
-            {isLogin && (
-              <details className="mt-5 group">
-                <summary className="cursor-pointer text-xs uppercase tracking-wider text-[var(--text-faint)] hover:text-[var(--gold)] transition-colors flex items-center gap-1 list-none">
-                  <span className="group-open:rotate-90 transition-transform inline-block">
-                    ▸
-                  </span>
-                  Demo accounts
-                </summary>
-                <div className="mt-3 glass rounded-xl p-4 text-xs space-y-1.5">
-                  <div className="flex justify-between text-[var(--text-body)]">
-                    <span className="font-mono">john@example.com</span>
-                    <span className="text-[var(--text-faint)]">Owner</span>
-                  </div>
-                  <div className="flex justify-between text-[var(--text-body)]">
-                    <span className="font-mono">maria@example.com</span>
-                    <span className="text-[var(--text-faint)]">Detailer</span>
-                  </div>
-                  <div className="flex justify-between text-[var(--text-body)]">
-                    <span className="font-mono">tom@example.com</span>
-                    <span className="text-[var(--text-faint)]">Host</span>
-                  </div>
-                  <div className="text-[10px] text-[var(--text-faint)] mt-2 pt-2 border-t border-white/5">
-                    Any password works in demo mode
-                  </div>
-                </div>
-              </details>
-            )}
+            <p className="mt-5 text-xs text-[var(--text-faint)] leading-relaxed">
+              Early access: your account is saved on this device while we finish launching. New sign-ups are sent to the Palm Polish team, and we&apos;ll email you when your area opens.
+            </p>
 
             <div className="mt-6 text-center text-sm">
               <span className="text-[var(--text-muted)]">

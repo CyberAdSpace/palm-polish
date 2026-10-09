@@ -1,5 +1,6 @@
 "use client";
 
+import ContactForm from "@/components/ContactForm";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
@@ -242,6 +243,7 @@ export default function Home() {
             </Link>
           </div>
         </section>
+        <ContactForm />
       </main>
 
       {/* Footer */}
@@ -282,7 +284,7 @@ export default function Home() {
             </span>
           </div>
           <p>
-            &copy; {new Date().getFullYear()} Palm Polish. All rights reserved.
+            &copy; {new Date().getFullYear()} Palm Polish · <a href="mailto:Contact@PalmPolish.com" className="hover:text-[var(--gold)]">Contact@PalmPolish.com</a>
           </p>
         </div>
       </footer>
