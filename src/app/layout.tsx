@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Instrument_Serif } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -40,7 +41,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">{children}<Script src="https://cyberadspace.com/chat/widget.js" data-brand="palm-polish" strategy="afterInteractive" /></body>
     </html>
   );
 }
